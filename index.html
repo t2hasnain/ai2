@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI-powered Webpage with Animated Background">
+    <title>AI Animation Website</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Reset some default styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Set body background, font, and general styling */
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: #fff;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 1s ease; /* Smooth background color transition */
+        }
+
+        /* Center the content */
+        .content {
+            position: absolute;
+            text-align: center;
+            z-index: 10;
+        }
+
+        /* Heading style */
+        h1 {
+            font-size: 3rem;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            font-family: "poppins";
+            letter-spacing: 4px;
+            font-weight: 800;
+            text-shadow: 0px 0px 20px rgba(255, 255, 255, 0.7);
+        }
+
+        /* Paragraph styling */
+        p {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            margin-bottom: 30px;
+        }
+
+        /* 3D button style */
+        .btn {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            background: linear-gradient(145deg, #6a3dff, #9c62ff);
+            border: none;
+            color: #fff;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2), -2px -2px 10px rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3), -5px -5px 15px rgba(255, 255, 255, 0.4);
+        }
+
+        /* Full screen animated canvas */
+        .animation-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        /* Create a transparent background with subtle borders */
+        body {
+            background: rgba(20, 20, 20, 0.8);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            p {
+                font-size: 1rem;
+            }
+
+            .btn {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="content">
+        <h1>Welcome to fasteox AI</h1>
+        <p>we are working on our fasteox AI for best AI tools .</p>
+        <button class="btn">Working on Our AI Site</button>
+    </div>
+
+    <div class="animation-container">
+        <canvas id="aiCanvas"></canvas>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('aiCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+        let bgColor = ['#2d2d2d', '#3a3a3a', '#4f4f4f', '#222222']; // Array of background colors
+        let particleColor = ['#ff3b30', '#34c759', '#ffcc00', '#5ac8fa']; // Array of animation colors
+
+        let currentBgColorIndex = 0;
+        let currentParticleColorIndex = 0;
+
+        // Set canvas size to match window size
+        function resizeCanvas() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+        }
+
+        // Generate random points for the AI animation effect
+        function generateParticles() {
+            const particles = [];
+            for (let i = 0; i < 200; i++) {
+                particles.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    size: Math.random() * 2 + 1,
+                    speedX: Math.random() * 2 - 1,
+                    speedY: Math.random() * 2 - 1,
+                    alpha: Math.random() * 0.5 + 0.3
+                });
+            }
+            return particles;
+        }
+
+        let particles = generateParticles();
+
+        // Draw particles on canvas
+        function drawParticles() {
+            ctx.clearRect(0, 0, width, height);
+
+            // Loop through particles and update their position
+            particles.forEach(particle => {
+                ctx.beginPath();
+                ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(${hexToRgb(particleColor[currentParticleColorIndex])}, ${particle.alpha})`;
+                ctx.fill();
+
+                particle.x += particle.speedX;
+                particle.y += particle.speedY;
+
+                // Bounce particles off the edges
+                if (particle.x < 0 || particle.x > width) particle.speedX = -particle.speedX;
+                if (particle.y < 0 || particle.y > height) particle.speedY = -particle.speedY;
+            });
+
+            requestAnimationFrame(drawParticles);
+        }
+
+        // Helper function to convert hex to rgb
+        function hexToRgb(hex) {
+            const bigint = parseInt(hex.replace('#', ''), 16);
+            const r = (bigint >> 16) & 255;
+            const g = (bigint >> 8) & 255;
+            const b = bigint & 255;
+            return `${r},${g},${b}`;
+        }
+
+        // Change background color every 10 seconds
+        function changeBackgroundColor() {
+            currentBgColorIndex = (currentBgColorIndex + 1) % bgColor.length;
+            document.body.style.backgroundColor = bgColor[currentBgColorIndex];
+        }
+
+        // Change particle color every 3 seconds
+        function changeParticleColor() {
+            currentParticleColorIndex = (currentParticleColorIndex + 1) % particleColor.length;
+        }
+
+        // Initial setup
+        resizeCanvas();
+        drawParticles();
+
+        // Handle window resizing
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            particles = generateParticles();
+        });
+
+        // Set interval for changing background and particle color
+        setInterval(changeBackgroundColor, 10000); // 10 seconds
+        setInterval(changeParticleColor, 3000);    // 3 seconds
+    </script>
+
+</body>
+</html>
